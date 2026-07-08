@@ -366,8 +366,9 @@ function pointerDown(clientX, clientY) {
   }
   flap();
 }
-canvas.addEventListener('mousedown', (e) => pointerDown(e.clientX, e.clientY));
-canvas.addEventListener('touchstart', (e) => {
+// listen on the whole window so taps on the letterbox area work too
+window.addEventListener('mousedown', (e) => pointerDown(e.clientX, e.clientY));
+window.addEventListener('touchstart', (e) => {
   e.preventDefault();
   const t = e.touches[0];
   if (t) pointerDown(t.clientX, t.clientY);
