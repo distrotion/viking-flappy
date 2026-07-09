@@ -891,6 +891,50 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
+
+// ---- cross-promo: ปุ่มไปหน้ารวมเกมของค่าย ----
+const PROMO_BTN = { x: (W - 180) / 2, y: 476, w: 180, h: 30 };
+function promoVisible() { try { return state === 0 || (state === 2 && deathTimer > 0.5); } catch (e) { return false; } }
+function promoHit(cx, cy) {
+  if (!promoVisible()) return false;
+  const r = canvas.getBoundingClientRect();
+  const px = r.width > 0 ? (cx - r.left) * (W / r.width) : cx;
+  const py = r.width > 0 ? (cy - r.top) * (H / r.height) : cy;
+  return px >= PROMO_BTN.x && px <= PROMO_BTN.x + PROMO_BTN.w && py >= PROMO_BTN.y && py <= PROMO_BTN.y + PROMO_BTN.h;
+}
+window.addEventListener('mousedown', function (e) {
+  if (promoHit(e.clientX, e.clientY)) { e.stopImmediatePropagation(); location.href = 'https://distrotion.github.io/'; }
+}, true);
+window.addEventListener('touchstart', function (e) {
+  const t = e.touches[0];
+  if (t && promoHit(t.clientX, t.clientY)) { e.stopImmediatePropagation(); e.preventDefault(); location.href = 'https://distrotion.github.io/'; }
+}, { capture: true, passive: false });
+(function promoLoop() {
+  if (promoVisible()) {
+    const x = PROMO_BTN.x, y = PROMO_BTN.y, w = PROMO_BTN.w, h = PROMO_BTN.h, r = h / 2;
+    ctx.save();
+    ctx.fillStyle = 'rgba(20,14,30,0.85)';
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#f0d060';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.font = 'bold 14px Tahoma';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#f0d060';
+    ctx.fillText('🏰 เกมอื่นของเรา', x + w / 2, y + h / 2 + 1);
+    ctx.restore();
+  }
+  requestAnimationFrame(promoLoop);
+})();
+
 </script>
 </body>
 </html>
